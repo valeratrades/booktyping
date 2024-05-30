@@ -38,7 +38,7 @@ jobs:
 
       - name: Build the Rust WASM app and all of its assets
         run: |
-          cd web_app
+          cd booktyping-web
           trunk build --public-url ${{ github.event.repository.name }}
           cd ..
 

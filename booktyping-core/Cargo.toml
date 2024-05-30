@@ -1,0 +1,17 @@
+[package]
+name = "booktyping-core"
+version = "0.1.0"
+authors = ["Jesse Slater <jsssltr@gmail.com>"]
+edition = "2021"
+
+[package.metadata.cargo-machete]
+ignored = ["derive-new", "anyhow", "serde", "tokio"]
+
+[dependencies]
+dirs = { workspace = true }
+ratatui = { workspace = true }
+regex = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+deunicode = { workspace = true }

@@ -1,6 +1,8 @@
 ## Conventional
 **/tmp/
-**/target/
+target/
+booktyping-core/target/
+booktyping/target/
 **/debug/
 **/bin/
 **/*.test

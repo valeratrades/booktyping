@@ -1,0 +1,19 @@
+[package]
+name = "booktyping-web"
+version = "0.1.0"
+authors = ["Jesse Slater <jsssltr@gmail.com>"]
+edition = "2021"
+
+[package.metadata.cargo-machete]
+ignored = ["derive-new", "anyhow", "serde", "tokio"]
+
+
+[dependencies]
+booktyping-core = { path = "../booktyping-core" }
+yew = { version = "^0.21.0", features = ["csr"] }
+web-sys = { version = "0.3", features = ["Window", "Screen"] }
+wasm-bindgen = { version = "0.2" }
+js-sys = { version = "0.3" }
+send_wrapper = "0.6.0"
+derive_more = "0.99.17"
+ratatui = { workspace = true }

@@ -7,9 +7,11 @@ edition = "2021"
 [package.metadata.cargo-machete]
 ignored = ["derive-new", "anyhow", "serde", "tokio"]
 
+[dev-dependencies]
+booktyping-core = { path = "../booktyping-core" }
 
 [dependencies]
-booktyping-core = { path = "../booktyping-core" }
+booktyping-core = "0.1.0"
 yew = { version = "^0.21.0", features = ["csr"] }
 web-sys = { version = "0.3", features = ["Window", "Screen"] }
 wasm-bindgen = { version = "0.2" }

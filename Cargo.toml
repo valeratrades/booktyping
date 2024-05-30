@@ -6,11 +6,6 @@ edition = "2021"
 [package.metadata.cargo-machete]
 ignored = ["derive-new", "anyhow", "serde", "tokio"]
 
-#? still not sure if these do anything
-[lints.clippy]
-get_first = "allow"
-len_zero = "allow"
-
 [dependencies]
 derive-new = "^0.6.0"
 anyhow = "^1.0.86"

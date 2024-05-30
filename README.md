@@ -5,11 +5,31 @@
 [<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/valeratrades/booktyping/ci.yml?branch=master&style=for-the-badge&style=flat-square" height="20">](https://github.com/valeratrades/booktyping/actions?query=branch%3Amaster) <!--NB: Won't find it if repo is private-->
 [![Lines Of Code](https://tokei.rs/b1/github/valeratrades/booktyping?category=code)](https://github.com/valeratrades/booktyping/tree/master/src)
 
-<br>
+![usage-example-gif](./docs/.assets/usage-example.gif)
 
-<sup>
-This repository follows <a href="https://github.com/valeratrades/.github/tree/master/best_practices">my best practices</a>.
-</sup>
+booktyping is a simple commandline tool for practicing typing accuracy while reading a book.
+
+# installation
+
+booktyping has only been tested on linux, but should work on Windows and MacOS. The only dependency is rust. 
+
+Clone this repository and run
+```bash
+cargo build --release
+```
+This will generate an executable file in booktyping/target/release/.
+
+# usage
+Find a text copy of your favorite book, and place it in $HOME/.booktyping/{book_title}.txt.
+Now run booktyping with 
+```bash
+./booktyping {book_title}
+```
+
+Your progress will be automatically saved, and JSON logs of your keypresses and your sample completions will be saved in $HOME/.booktyping/{book_title}/keypresses.json and $HOME/.booktyping/{book_title}/tests.json respectively.
+
+
+<br>
 
 #### License
 

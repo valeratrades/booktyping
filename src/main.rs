@@ -1,3 +1,5 @@
+#![allow(clippy::get_first)]
+#![allow(clippy::len_zero)]
 use clap::{ArgGroup, Args, Parser, Subcommand};
 
 #[derive(Parser)]

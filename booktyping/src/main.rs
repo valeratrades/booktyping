@@ -1,6 +1,6 @@
 #![allow(clippy::get_first)]
 #![allow(clippy::len_zero)]
-use booktyping_core::app::{App, AppResult, KeyPress, Test, Text};
+use booktyping_core::{config::AppConfig, app::{App, AppResult, KeyPress, Test, Text}};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;
@@ -10,12 +10,10 @@ use std::{fs, io};
 
 pub mod event;
 pub mod file_sys;
-pub mod config;
 use event::*;
 
 use clap::{Args, Parser, Subcommand};
 use v_utils::io::ExpandedPath;
-use booktyping_core::config::AppConfig;
 
 #[derive(Parser, Default)]
 #[command(author, version, about, long_about = None)]
@@ -61,7 +59,7 @@ struct RunArgs {
 
 fn main() {
 	let cli = Cli::parse();
-	let config = config::AppConfig::read(&cli.config.0).unwrap();
+	let config = AppConfig::read(&cli.config.0).unwrap();
 	let config = update_config(config, &cli);
 	match cli.command {
 		Commands::Run(args) => {
@@ -108,7 +106,7 @@ fn run_app(config: AppConfig, book: String) -> AppResult<()> {
 	while app.running {
 		match events.next()? {
 			Event::Key(key_event) => {
-				app.handle_key_events(key_event)?;
+				app.handle_key_events(&config, key_event)?;
 			}
 			Event::Resize(width, _) => {
 				app.terminal_width = width;

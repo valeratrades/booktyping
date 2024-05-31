@@ -6,21 +6,26 @@ use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;
 use ratatui::Terminal;
 use std::panic;
-use std::path::Path;
 use std::{fs, io};
 
 pub mod event;
 pub mod file_sys;
+pub mod config;
 use event::*;
 
 use clap::{Args, Parser, Subcommand};
 use v_utils::io::ExpandedPath;
+use booktyping_core::config::AppConfig;
 
-#[derive(Parser)]
+#[derive(Parser, Default)]
 #[command(author, version, about, long_about = None)]
-struct Cli {
+pub struct Cli {
+	//todo config
 	#[command(subcommand)]
 	command: Commands,
+	/// path to config
+	#[arg(long, default_value = "~/.config/booktyping.toml")]
+	config: ExpandedPath,
 	/// Where the books are stored
 	#[arg(long, default_value = "~/.booktyping")]
 	//NB: `ExpandedPath` may or may not break on windows, but who cares
@@ -35,6 +40,11 @@ enum Commands {
 	///```
 	Run(RunArgs),
 }
+impl Default for Commands {
+	fn default() -> Self {
+		Self::Run(Default::default())
+	}
+}
 
 #[derive(Clone, Debug, Default, Args)]
 struct RunArgs {
@@ -42,19 +52,25 @@ struct RunArgs {
 	#[arg(short, long)]
 	web: bool,
 
+	/// Whether to ignore errors that are likely caused by misreading and not typing.
+	#[arg(short, long)]
+	myopia: bool,
+
 	book: String,
 }
 
 fn main() {
 	let cli = Cli::parse();
+	let config = config::AppConfig::read(&cli.config.0).unwrap();
+	let config = update_config(config, &cli);
 	match cli.command {
 		Commands::Run(args) => {
-			run_app(args, cli.library.as_ref()).unwrap();
+			run_app(config, args.book).unwrap();
 		}
 	}
 }
 
-fn run_app(args: RunArgs, library: &Path) -> AppResult<()> {
+fn run_app(config: AppConfig, book: String) -> AppResult<()> {
 	let backend = CrosstermBackend::new(io::stderr());
 	let mut terminal = Terminal::new(backend)?;
 
@@ -68,15 +84,15 @@ fn run_app(args: RunArgs, library: &Path) -> AppResult<()> {
 		panic_hook(panic);
 	}));
 
-	let _ = fs::create_dir(library.join(&args.book));
+	let _ = fs::create_dir(&config.library.join(&book));
 
-	let book_text = file_sys::load_book(&args.book).expect("Failed to load book");
+	let book_text = file_sys::load_book(&book).expect("Failed to load book");
 
-	let tests = file_sys::load_tests(&args.book).expect("Failed to load tests");
+	let tests = file_sys::load_tests(&book).expect("Failed to load tests");
 
 	let save = move |tests: Vec<Test>, keypresses: Vec<KeyPress>| {
-		file_sys::save_tests(&args.book, &tests)?;
-		file_sys::save_keypresses(&args.book, &keypresses)?;
+		file_sys::save_tests(&book, &tests)?;
+		file_sys::save_keypresses(&book, &keypresses)?;
 		Ok(())
 	};
 
@@ -106,4 +122,24 @@ fn run_app(args: RunArgs, library: &Path) -> AppResult<()> {
 	crossterm::execute!(io::stderr(), LeaveAlternateScreen, DisableMouseCapture)?;
 	terminal.show_cursor()?;
 	Ok(())
+}
+
+/// goes through each field, with cli-provided values overriding read config values, but only when they are different from the default
+pub fn update_config(app_config: AppConfig, cli: &Cli) -> AppConfig {
+	let mut out_config = app_config;
+	let default_cli = Cli::default();
+
+	if cli.library.as_ref() != default_cli.library.as_ref() {
+		out_config.library = cli.library.0.clone();
+	}
+
+	match &cli.command {
+		Commands::Run(args) => {
+			let default_run = RunArgs::default();
+			if args.myopia != default_run.myopia {
+				out_config.myopia = args.myopia;
+			}
+		}
+	}
+	out_config
 }

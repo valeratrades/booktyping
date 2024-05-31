@@ -1,12 +1,11 @@
 [package]
 name = "booktyping-core"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jesse Slater <jsssltr@gmail.com>"]
 edition = "2021"
 description = "Practice typing while reading"
 rust-version = "1.78"
 license = "MIT"
-readme = "README.md"
 repository = "https://github.com/valeratrades/booktyping"
 
 
@@ -14,6 +13,9 @@ repository = "https://github.com/valeratrades/booktyping"
 ignored = ["derive-new", "anyhow", "serde", "tokio"]
 
 [dependencies]
+config = "0.14.0"
+v_utils = { workspace = true }
+anyhow = { workspace = true }
 dirs = { workspace = true }
 ratatui = { workspace = true }
 regex = { workspace = true }

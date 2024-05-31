@@ -1,6 +1,6 @@
 [package]
 name = "booktyping"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Jesse Slater <jsssltr@gmail.com>"]
 edition = "2021"
 description = "Practice typing while reading"
@@ -13,12 +13,14 @@ repository = "https://github.com/valeratrades/booktyping"
 ignored = ["derive-new", "anyhow", "serde", "tokio"]
 
 [dependencies]
-#booktyping-core = "0.1.0"
+#booktyping-core = "0.1.1"
 booktyping-core = { path = "../booktyping-core" }
 crossterm = { version = "0.27.0", features = ["windows"] }
-v_utils = { version = "1.3.7", features = ["io"] }
 clap = { version = "4.5.4", features = ["derive"] }
+v_utils = { workspace = true}
+derive-new = "0.6.0"
 ratatui = { workspace = true }
+anyhow = { workspace = true }
 dirs = { workspace = true }
 regex = { workspace = true }
 serde = { workspace = true }

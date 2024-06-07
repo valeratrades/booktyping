@@ -1,6 +1,9 @@
 #![allow(clippy::get_first)]
 #![allow(clippy::len_zero)]
-use booktyping_core::{config::AppConfig, app::{App, AppResult, KeyPress, Test, Text}};
+use booktyping_core::{
+	app::{App, AppResult, KeyPress, Test, Text},
+	config::AppConfig,
+};
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::CrosstermBackend;

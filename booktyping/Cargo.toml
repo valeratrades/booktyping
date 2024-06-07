@@ -13,8 +13,7 @@ repository = "https://github.com/valeratrades/booktyping"
 ignored = ["derive-new", "anyhow", "serde", "tokio"]
 
 [dependencies]
-#booktyping-core = "0.1.1"
-booktyping-core = { path = "../booktyping-core" }
+booktyping-core = { path = "../booktyping-core", version = "^0" }
 crossterm = { version = "0.27.0", features = ["windows"] }
 clap = { version = "4.5.4", features = ["derive"] }
 v_utils = { workspace = true}

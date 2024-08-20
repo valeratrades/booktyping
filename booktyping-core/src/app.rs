@@ -82,7 +82,7 @@ impl App {
 			match myopia {
 				true => {
 					for char_group in similar_char_groups {
-						if char_group.contains(&c) || char_group.contains(&correct_char) {
+						if char_group.contains(&c) && char_group.contains(&correct_char) {
 							return true;
 						}
 					}

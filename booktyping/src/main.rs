@@ -85,7 +85,7 @@ fn run_app(config: AppConfig, book: String) -> AppResult<()> {
 		panic_hook(panic);
 	}));
 
-	let _ = fs::create_dir(&config.library.join(&book));
+	let _ = fs::create_dir(config.library.join(&book));
 
 	let book_text = file_sys::load_book(&book).expect("Failed to load book");
 

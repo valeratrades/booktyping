@@ -1,7 +1,8 @@
 [workspace]
 members = [
 	"booktyping",
-	"booktyping-*",
+	#"booktyping-*",
+	"booktyping-core",
 ]
 resolver = "2"
 

@@ -15,7 +15,7 @@ impl App {
 		let &(cur_line, cur_offset) = self.line_index.get(self.sample_start_index + self.text.cur_char).unwrap();
 		let &(end_line, end_offset) = self.line_index.get(self.sample_start_index + self.sample_len).unwrap();
 		let mut lines: Vec<String> = self.book_lines.clone();
-		let num_rows = frame.size().height as usize - 2; // TODO fix crash
+		let num_rows = frame.area().height as usize - 2; // TODO fix crash
 		let rows_to_center = num_rows / 2 - 2; // TODO fix crash
 
 		let first_row = usize::checked_sub(rows_to_center, self.display_line).unwrap_or(0);
@@ -93,7 +93,7 @@ impl App {
 
 		let graph = Paragraph::new::<Text>(display_lines.into()).style(Style::default());
 
-		let screen = Rect::new(0, 0, frame.size().width, frame.size().height);
+		let screen = Rect::new(0, 0, frame.area().width, frame.area().height);
 
 		let vert = Layout::default()
 			.direction(Direction::Vertical)

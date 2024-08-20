@@ -1,6 +1,6 @@
 [package]
 name = "booktyping-core"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Jesse Slater <jsssltr@gmail.com>"]
 edition = "2021"
 description = "Practice typing while reading"

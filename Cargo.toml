@@ -6,6 +6,14 @@ members = [
 ]
 resolver = "2"
 
+[workspace.package]
+authors = ["Jesse Slater <jsssltr@gmail.com>"]
+edition = "2021"
+description = "Practice typing while reading"
+rust-version = "1.78"
+license = "MIT"
+repository = "https://github.com/valeratrades/booktyping"
+
 [profile.release]
 # Reduces the binary size of the WASM file.
 lto = true

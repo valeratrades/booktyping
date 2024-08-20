@@ -8,20 +8,16 @@ use deunicode::deunicode;
 use regex::Regex;
 
 pub fn load_book(book_title: &str) -> AppResult<String> {
-	Ok(deunicode(
-		&Regex::new(r"\s+")
-			.unwrap()
-			.replace_all(
-				&fs::read_to_string(dirs::home_dir().unwrap().join(".booktyping").join(format!("{}.txt", book_title)))?.trim(),
-				" ",
-			)
-			.to_string(),
-	))
+	Ok(deunicode(&Regex::new(r"\s+").unwrap().replace_all(
+		fs::read_to_string(dirs::home_dir().unwrap().join(".booktyping").join(format!("{}.txt", book_title)))?.trim(),
+		" ",
+	)))
 }
 
 pub fn load_tests(book_title: &str) -> AppResult<Vec<Test>> {
 	let mut test_log = fs::OpenOptions::new()
 		.create(true)
+		.truncate(false)
 		.read(true)
 		.write(true)
 		.open(dirs::home_dir().unwrap().join(".booktyping").join(book_title).join("tests.json"))
@@ -34,16 +30,18 @@ pub fn load_tests(book_title: &str) -> AppResult<Vec<Test>> {
 pub fn save_tests(book_title: &str, tests: &Vec<Test>) -> AppResult<()> {
 	let mut test_log = fs::OpenOptions::new()
 		.create(true)
+		.truncate(false)
 		.write(true)
 		.open(dirs::home_dir().unwrap().join(".booktyping").join(book_title).join("tests.json"))?;
 	let bytes = serde_json::to_vec(tests)?;
-	test_log.write(&bytes)?;
+	test_log.write_all(&bytes)?;
 	Ok(())
 }
 
 pub fn load_keypresses(book_title: &str) -> AppResult<Vec<KeyPress>> {
 	let mut key_press_log = fs::OpenOptions::new()
 		.create(true)
+		.truncate(false)
 		.read(true)
 		.open(dirs::home_dir().unwrap().join(".booktyping").join(book_title).join("keypresses.json"))
 		.expect("Failed to open keypress file");
@@ -55,9 +53,10 @@ pub fn load_keypresses(book_title: &str) -> AppResult<Vec<KeyPress>> {
 pub fn save_keypresses(book_title: &str, keypresses: &Vec<KeyPress>) -> AppResult<()> {
 	let mut key_press_log = fs::OpenOptions::new()
 		.create(true)
+		.truncate(false)
 		.write(true)
 		.open(dirs::home_dir().unwrap().join(".booktyping").join(book_title).join("keypresses.json"))?;
 	let bytes = serde_json::to_vec(keypresses)?;
-	key_press_log.write(&bytes)?;
+	key_press_log.write_all(&bytes)?;
 	Ok(())
 }

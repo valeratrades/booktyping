@@ -1,22 +1,22 @@
 use ratatui::{
 	layout::Alignment,
+	prelude::*,
 	style::{Color, Style},
-	widgets::{Block, Borders, Paragraph},
+	widgets::{Block, Borders, Paragraph, *},
 	Frame,
 };
-use ratatui::{prelude::*, widgets::*};
 
 use crate::app::App;
 
-//BUG: panic on end of short input
+// BUG: panic on end of short input
 impl App {
 	pub fn render(&self, frame: &mut Frame) {
 		let &(start_line, start_offset) = self.line_index.get(self.sample_start_index).unwrap();
 		let &(cur_line, cur_offset) = self.line_index.get(self.sample_start_index + self.text.cur_char).unwrap();
 		let &(end_line, end_offset) = self.line_index.get(self.sample_start_index + self.sample_len).unwrap();
 		let mut lines: Vec<String> = self.book_lines.clone();
-		let num_rows = frame.size().height as usize - 2; //TODO fix crash
-		let rows_to_center = num_rows / 2 - 2; //TODO fix crash
+		let num_rows = frame.size().height as usize - 2; // TODO fix crash
+		let rows_to_center = num_rows / 2 - 2; // TODO fix crash
 
 		let first_row = usize::checked_sub(rows_to_center, self.display_line).unwrap_or(0);
 
@@ -27,56 +27,65 @@ impl App {
 		let mut display_lines: Vec<Line> = Vec::new();
 		for (mut i, s) in lines.iter().enumerate() {
 			i += num_skipped_lines;
-			if i == cur_line {
-				if i == start_line && i == end_line {
-					display_lines.push(Line::from(vec![
-						s.chars().take(start_offset).collect::<String>().dim(),
-						s.chars().take(cur_offset).skip(start_offset).collect::<String>().white(),
-						s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
-						s.chars().take(end_offset).skip(cur_offset + 1).collect::<String>().blue(),
-						s.chars().skip(end_offset).collect::<String>().dim(),
-					]));
-				} else if i == start_line {
-					display_lines.push(Line::from(vec![
-						s.chars().take(start_offset).collect::<String>().dim(),
-						s.chars().take(cur_offset).skip(start_offset).collect::<String>().white(),
-						s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
-						s.chars().skip(cur_offset + 1).collect::<String>().blue(),
-					]));
-				} else if i == end_line {
-					display_lines.push(Line::from(vec![
-						s.chars().take(cur_offset).collect::<String>().white(),
-						s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
-						s.chars().take(end_offset).skip(cur_offset + 1).collect::<String>().blue(),
-						s.chars().skip(end_offset).collect::<String>().dim(),
-					]));
-				} else {
-					display_lines.push(Line::from(vec![
-						s.chars().take(cur_offset).collect::<String>().white(),
-						s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
-						s.chars().skip(cur_offset + 1).collect::<String>().blue(),
-					]));
-				}
-			} else if i < cur_line {
-				if i == start_line {
-					display_lines.push(Line::from(vec![
-						s.chars().take(start_offset).collect::<String>().dim(),
-						s.chars().skip(start_offset).collect::<String>().white(),
-					]));
-				} else if i < start_line {
-					display_lines.push(s.clone().dim().into());
-				} else {
-					display_lines.push(s.clone().white().into());
-				}
-			} else {
-				if i == end_line {
+			match i {
+				_ if i == cur_line => match (i == start_line, i == end_line) {
+					(true, true) => {
+						display_lines.push(Line::from(vec![
+							s.chars().take(start_offset).collect::<String>().dim(),
+							s.chars().take(cur_offset).skip(start_offset).collect::<String>().white(),
+							s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
+							s.chars().take(end_offset).skip(cur_offset + 1).collect::<String>().blue(),
+							s.chars().skip(end_offset).collect::<String>().dim(),
+						]));
+					}
+					(true, false) => {
+						display_lines.push(Line::from(vec![
+							s.chars().take(start_offset).collect::<String>().dim(),
+							s.chars().take(cur_offset).skip(start_offset).collect::<String>().white(),
+							s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
+							s.chars().skip(cur_offset + 1).collect::<String>().blue(),
+						]));
+					}
+					(false, true) => {
+						display_lines.push(Line::from(vec![
+							s.chars().take(cur_offset).collect::<String>().white(),
+							s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
+							s.chars().take(end_offset).skip(cur_offset + 1).collect::<String>().blue(),
+							s.chars().skip(end_offset).collect::<String>().dim(),
+						]));
+					}
+					(false, false) => {
+						display_lines.push(Line::from(vec![
+							s.chars().take(cur_offset).collect::<String>().white(),
+							s.chars().nth(cur_offset).unwrap().to_string().black().bg(Color::White),
+							s.chars().skip(cur_offset + 1).collect::<String>().blue(),
+						]));
+					}
+				},
+				_ if i < cur_line => match i {
+					_ if i == start_line => {
+						display_lines.push(Line::from(vec![
+							s.chars().take(start_offset).collect::<String>().dim(),
+							s.chars().skip(start_offset).collect::<String>().white(),
+						]));
+					}
+					_ if i < start_line => {
+						display_lines.push(s.clone().dim().into());
+					}
+					_ => {
+						display_lines.push(s.clone().white().into());
+					}
+				},
+				_ if i == end_line => {
 					display_lines.push(Line::from(vec![
 						s.chars().take(end_offset).collect::<String>().blue(),
 						s.chars().skip(end_offset).collect::<String>().dim(),
 					]));
-				} else if i < end_line {
+				}
+				_ if i < end_line => {
 					display_lines.push(s.clone().blue().into());
-				} else {
+				}
+				_ => {
 					display_lines.push(s.clone().dim().into());
 				}
 			}

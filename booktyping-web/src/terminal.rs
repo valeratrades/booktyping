@@ -1,5 +1,6 @@
 use std::{borrow::Cow, io::Result};
 
+use anyhow::Result;
 use ratatui::{
 	buffer::Cell,
 	prelude::{Backend, Rect},

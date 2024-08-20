@@ -1,6 +1,8 @@
+use std::{collections::HashSet as Set, error};
+
 use chrono::{serde::ts_microseconds, DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::error;
+
 use crate::config::AppConfig;
 
 pub const DEFAULT_TEXT_WIDTH_PERCENT: u16 = 60;
@@ -33,9 +35,8 @@ pub struct Text {
 
 impl Text {
 	pub fn new<F>(text: String, sample_log: Vec<Test>, save: F, cur_char: usize) -> Self
-where
-		F: Fn(Vec<Test>, Vec<KeyPress>) -> AppResult<()> + 'static,
-	{
+	where
+		F: Fn(Vec<Test>, Vec<KeyPress>) -> AppResult<()> + 'static, {
 		Self {
 			text,
 			cur_char,
@@ -74,16 +75,21 @@ impl App {
 	}
 
 	pub fn handle_char(&mut self, config: &AppConfig, c: char) -> AppResult<()> {
-		fn is_correct_char(myopia: bool, c: char, actual_char: char) -> bool {
-			let error_prone_punctuation = ['.', ',', ';', ':'];
-			if myopia {
-				if error_prone_punctuation.contains(&actual_char) {
-					return error_prone_punctuation.contains(&c);
-				}	else {
-					c.to_lowercase().collect::<String>() == actual_char.to_lowercase().collect::<String>()
+		fn is_correct_char(myopia: bool, c: char, correct_char: char) -> bool {
+			// TODO: generate mistakable versions of words. Only generate existing words from e450k (+ vim spell file if flag is provided). Errors in capitalization are only allowed on the first char of each word.
+			let similar_char_groups = &[Set::from([',', '.', ';']), Set::from([';', ':']), Set::from(['n', 'h']), Set::from(['i', 'l', '1'])];
+
+			match myopia {
+				true => {
+					for char_group in similar_char_groups {
+						if char_group.contains(&c) || char_group.contains(&correct_char) {
+							return true;
+						}
+					}
+
+					c.to_lowercase().collect::<String>() == correct_char.to_lowercase().collect::<String>()
 				}
-			} else {
-				c == actual_char
+				false => c == correct_char,
 			}
 		}
 		let actual_char = self.text.text.chars().nth(self.sample_start_index + self.text.cur_char).unwrap();
@@ -106,24 +112,16 @@ impl App {
 			self.text.cur_char = 0;
 		}
 
-		let log_entry = &KeyPress {
-			correct,
-			key: c,
-			time: Utc::now(),
-		};
+		let log_entry = &KeyPress { correct, key: c, time: Utc::now() };
 		self.text.keypress_log.push(log_entry.clone());
 
-		let &(cur_line, _) = self
-			.line_index
-			.get(self.sample_start_index + self.text.cur_char)
-			.unwrap();
+		let &(cur_line, _) = self.line_index.get(self.sample_start_index + self.text.cur_char).unwrap();
 		self.display_line = cur_line;
 		Ok(())
 	}
 
 	pub fn generate_lines(&mut self) {
-		let max_line_len =
-		(self.terminal_width as f64 * (self.text_width_percent as f64 / 100.0)) as usize;
+		let max_line_len = (self.terminal_width as f64 * (self.text_width_percent as f64 / 100.0)) as usize;
 		let mut lines = Vec::new();
 		let mut line_index: Vec<(usize, usize)> = Vec::new();
 		let mut line = "".to_owned();
@@ -163,7 +161,7 @@ impl App {
 		}
 
 		self.book_lines = lines;
-		self.display_line = line_index.get(self.sample_start_index).unwrap().0; //TODO allow for resize while scrolled
+		self.display_line = line_index.get(self.sample_start_index).unwrap().0; // TODO allow for resize while scrolled
 		self.line_index = line_index;
 	}
 
@@ -177,14 +175,7 @@ impl App {
 			}
 		}
 
-		let avg_50 = tests
-			.iter()
-			.map(|t| t.end_index - t.start_index)
-			.filter(|&len| len > 5)
-			.rev()
-			.take(50)
-			.sum::<usize>()
-		/ 50;
+		let avg_50 = tests.iter().map(|t| t.end_index - t.start_index).filter(|&len| len > 5).rev().take(50).sum::<usize>() / 50;
 		let max_10 = tests
 			.iter()
 			.map(|t| t.end_index - t.start_index)
@@ -203,22 +194,9 @@ impl App {
 			.filter(|&len| len > 5)
 			.count();
 
-		let full = self
-			.text
-			.text
-			.chars()
-			.skip(start_index)
-			.take(best)
-			.collect::<String>();
+		let full = self.text.text.chars().skip(start_index).take(best).collect::<String>();
 
-		let len = full
-			.split_whitespace()
-			.rev()
-			.skip(usize::max(wrong_num, 1))
-			.collect::<Vec<_>>()
-			.join(" ")
-			.len()
-		+ 1;
+		let len = full.split_whitespace().rev().skip(usize::max(wrong_num, 1)).collect::<Vec<_>>().join(" ").len() + 1;
 
 		self.sample_start_index = usize::min(start_index, self.text.text.len() - 1);
 		self.sample_len = usize::min(len, self.text.text.len() - start_index - 1);

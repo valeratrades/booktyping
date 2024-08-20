@@ -1,27 +1,27 @@
 #![allow(clippy::get_first)]
 #![allow(clippy::len_zero)]
+use std::{fs, io, panic};
+
 use booktyping_core::{
 	app::{App, AppResult, KeyPress, Test, Text},
 	config::AppConfig,
 };
-use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
-use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
-use ratatui::backend::CrosstermBackend;
-use ratatui::Terminal;
-use std::panic;
-use std::{fs, io};
+use crossterm::{
+	event::{DisableMouseCapture, EnableMouseCapture},
+	terminal::{self, EnterAlternateScreen, LeaveAlternateScreen},
+};
+use ratatui::{backend::CrosstermBackend, Terminal};
 
 pub mod event;
 pub mod file_sys;
-use event::*;
-
 use clap::{Args, Parser, Subcommand};
+use event::*;
 use v_utils::io::ExpandedPath;
 
 #[derive(Parser, Default)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
-	//todo config
+	// todo config
 	#[command(subcommand)]
 	command: Commands,
 	/// path to config
@@ -29,16 +29,16 @@ pub struct Cli {
 	config: ExpandedPath,
 	/// Where the books are stored
 	#[arg(long, default_value = "~/.booktyping")]
-	//NB: `ExpandedPath` may or may not break on windows, but who cares
+	// NB: `ExpandedPath` may or may not break on windows, but who cares
 	library: ExpandedPath,
 }
 #[derive(Subcommand)]
 enum Commands {
 	/// Run
-	///Ex:
-	///```sh
-	///booktyping run
-	///```
+	/// Ex:
+	/// ```sh
+	/// booktyping run
+	/// ```
 	Run(RunArgs),
 }
 impl Default for Commands {

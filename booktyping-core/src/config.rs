@@ -14,7 +14,7 @@ impl AppConfig {
 	pub fn read(path: &Path) -> Result<Self> {
 		let settings = {
 			if path.exists() {
-				let builder = config::Config::builder().add_source(config::File::with_name(&path.to_str().unwrap()));
+				let builder = config::Config::builder().add_source(config::File::with_name(path.to_str().unwrap()));
 				let raw: config::Config = builder.build()?;
 				raw.try_deserialize()?
 			} else {

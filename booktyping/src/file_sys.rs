@@ -1,7 +1,11 @@
+use std::{
+	fs,
+	io::{Read, Write},
+};
+
 use booktyping_core::app::{AppResult, KeyPress, Test};
 use deunicode::deunicode;
 use regex::Regex;
-use std::{fs, io::Read, io::Write};
 
 pub fn load_book(book_title: &str) -> AppResult<String> {
 	Ok(deunicode(

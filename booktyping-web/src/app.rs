@@ -1,12 +1,15 @@
-use crate::{terminal::get_window_size, TERMINAL};
-use booktyping_core::app::{App, KeyPress, Test, Text};
-use booktyping_core::handler::{KeyCode as K, KeyDown, KeyModifiers as M};
-use js_sys::Function;
-use ratatui::layout::Rect;
-use ratatui::Frame;
 use std::panic;
+
+use booktyping_core::{
+	app::{App, KeyPress, Test, Text},
+	handler::{KeyCode as K, KeyDown, KeyModifiers as M},
+};
+use js_sys::Function;
+use ratatui::{layout::Rect, Frame};
 use wasm_bindgen::prelude::Closure;
 use yew::prelude::*;
+
+use crate::{terminal::get_window_size, TERMINAL};
 
 pub struct TermApp {
 	app: App,
@@ -25,13 +28,12 @@ fn to_key_down(event: KeyboardEvent) -> KeyDown {
 		"Down" => K::Down,
 		"Right" => K::Right,
 		"Left" => K::Left,
-		s => {
+		s =>
 			if s.len() == 1 {
 				K::Char(s.chars().next().unwrap())
 			} else {
 				K::Unimplemented
-			}
-		}
+			},
 	};
 	let mods = if event.ctrl_key() { M::Ctrl } else { M::Unimplemented };
 
@@ -64,9 +66,7 @@ impl Component for TermApp {
 		window.set_onresize(Some(&func));
 
 		let cb: Callback<KeyboardEvent> = ctx.link().callback(|e: KeyboardEvent| TermAppMsg::KeyDown(to_key_down(e)));
-		let func: Function = Closure::<dyn 'static + Fn(KeyboardEvent)>::new(move |e: KeyboardEvent| cb.emit(e))
-			.into_js_value()
-			.into();
+		let func: Function = Closure::<dyn 'static + Fn(KeyboardEvent)>::new(move |e: KeyboardEvent| cb.emit(e)).into_js_value().into();
 		window.set_onkeydown(Some(&func));
 
 		let book_text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras ultrices imperdiet augue et facilisis. Duis dignissim libero eros, eu sagittis purus suscipit at. Vivamus sit amet bibendum ex. Ut convallis velit id odio tincidunt fringilla. Mauris interdum eleifend sapien, vitae luctus sem. Sed suscipit ultrices metus, ut iaculis urna sagittis vel. Ut elementum nisi ac diam mattis, non condimentum urna pretium. Proin hendrerit metus sed pretium lacinia. Praesent a purus rhoncus odio imperdiet blandit quis quis risus. Aliquam euismod, eros at congue laoreet, sem mi pellentesque augue, et dictum magna augue eget lectus. Nam ultrices justo justo, quis gravida justo semper eget. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nunc hendrerit massa sed fringilla laoreet. In id quam tincidunt sem laoreet aliquet molestie a lacus. Donec felis dui, tempus tincidunt laoreet ut, convallis quis mauris. ".into();

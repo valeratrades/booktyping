@@ -1,9 +1,14 @@
-use booktyping_core::app::AppResult;
-use booktyping_core::handler::{KeyCode as K, KeyDown, KeyModifiers as M};
+use std::{
+	sync::mpsc,
+	thread,
+	time::{Duration, Instant},
+};
+
+use booktyping_core::{
+	app::AppResult,
+	handler::{KeyCode as K, KeyDown, KeyModifiers as M},
+};
 use crossterm::event::{self, Event as CrosstermEvent, KeyCode as CK, KeyEvent, KeyModifiers as CM};
-use std::sync::mpsc;
-use std::thread;
-use std::time::{Duration, Instant};
 
 #[derive(Debug, Copy, Clone)]
 pub enum Event {

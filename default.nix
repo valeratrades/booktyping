@@ -1,6 +1,6 @@
 { pkgs ? import <nixpkgs> { } }:
 let
-	manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
+	manifest = (pkgs.lib.importTOML ./booktyping/Cargo.toml).package;
 in
 pkgs.rustPlatform.buildRustPackage rec {
   pname = manifest.name;

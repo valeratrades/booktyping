@@ -1,5 +1,7 @@
-use crate::app::{App, AppResult, DEFAULT_TEXT_WIDTH_PERCENT, FULL_TEXT_WIDTH_PERCENT};
-use crate::config::AppConfig;
+use crate::{
+	app::{App, AppResult, DEFAULT_TEXT_WIDTH_PERCENT, FULL_TEXT_WIDTH_PERCENT},
+	config::AppConfig,
+};
 #[derive(Debug, Copy, Clone)]
 pub struct KeyDown {
 	pub code: KeyCode,
@@ -29,11 +31,7 @@ impl App {
 			(M::Ctrl, C::Char('c')) => self.quit()?,
 			(M::Ctrl, C::Char('f')) => {
 				self.full_text_width = !self.full_text_width;
-				self.text_width_percent = if self.full_text_width {
-					FULL_TEXT_WIDTH_PERCENT
-				} else {
-					DEFAULT_TEXT_WIDTH_PERCENT
-				};
+				self.text_width_percent = if self.full_text_width { FULL_TEXT_WIDTH_PERCENT } else { DEFAULT_TEXT_WIDTH_PERCENT };
 				self.generate_lines()
 			}
 			(_, C::Char(c)) => self.handle_char(config, c)?,

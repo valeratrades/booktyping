@@ -20,13 +20,13 @@ lto = true
 opt-level="z"
 
 [workspace.dependencies]
-anyhow = "1.0.86"
-clap = { version = "^4.5.16", features = ["derive"] }
-v_utils = { version = "1.6.2", default-features = false, features = ["io", "macros"] }
+anyhow = "1.0.91"
+clap = { version = "^4.5.20", features = ["derive"] }
+v_utils = { version = "1.7.8", default-features = false, features = ["io", "macros"] }
 dirs = "^5.0.1"
-ratatui = { version = "^0.28.0", default-features = false, features = ["crossterm"]}
-regex = "^1.10.6"
+ratatui = { version = "^0.29.0", default-features = false, features = ["crossterm"]}
+regex = "^1.11.1"
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "^1.0.125"
+serde_json = "^1.0.132"
 chrono = { version = "^0.4.38", features = ["serde"] }
 deunicode = "^1.6.0"

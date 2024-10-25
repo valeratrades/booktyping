@@ -1,5 +1,6 @@
-use anyhow::Result;
 use std::path::{Path, PathBuf};
+
+use anyhow::Result;
 use v_utils::macros::MyConfigPrimitives;
 
 /// AppConfig is the sentral settings of the entire program.
@@ -10,7 +11,7 @@ pub struct AppConfig {
 }
 
 impl AppConfig {
-	///NB: if file does not exist, we return default instead of erroring
+	/// NB: if file does not exist, we return default instead of erroring
 	pub fn read(path: &Path) -> Result<Self> {
 		let settings = {
 			if path.exists() {
